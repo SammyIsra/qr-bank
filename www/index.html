@@ -28,11 +28,22 @@
 
     <ion-pane>
       <ion-header-bar class="bar-stable">
-        <h1 class="title">Ionic Blank Starter</h1>
+        <h1 class="title">QR Bank</h1>
       </ion-header-bar>
+
       <ion-content ng-controller="ScannerController">
-        <button class="button" ng-click="scanBarcode()">Scan Code</button>
+        <button class="button button-block button-assertive" ng-click="scanBarcode()">Scan Code</button>
+
+        <ion-list type="card">
+          <ion-item ng-repeat="scan in scans">
+            {{ scan.format }}<br>
+            {{ scan.text }}<br>
+            {{ scan.dateTaken | date: 'h:mm a - dd MMM, yyyy'  }}
+          </ion-item>
+        </ion-list>
       </ion-content>
+
+      <scans-entries></scan-entries>
     </ion-pane>
   </body>
 </html>

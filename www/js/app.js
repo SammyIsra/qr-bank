@@ -23,8 +23,14 @@ var App = angular.module('starter', ['ionic', 'ngCordova'])
   });
 })
 
+
 App.controller("ScannerController", function($scope, $cordovaBarcodeScanner, $ionicPlatform){
 
+  $scope.scans = [{
+    text: "test",
+    format: "test",
+    dateTaken: new Date()
+  }];
 
   $ionicPlatform.ready(function(){
 
@@ -32,14 +38,26 @@ App.controller("ScannerController", function($scope, $cordovaBarcodeScanner, $io
 
       //Launch the Scanner
       $cordovaBarcodeScanner
-        .scan()
-        .then(
+        .scan().
+        then(
           function(barcodeData){
-          //Barcode worked
-          alert(barcodeData.text);
-        }, function(error){
-          //Barcode did not work
-          alert("It did not work!");
+            //Barcode scan worked
+
+            //scan not cancelled
+            if(barcodeData.cancelled){
+              $scope.scans.push({
+                text: barcodeData.text,
+                format: barcodeData.format,
+                dateTaken: new Date()
+              });
+            }
+
+            //if scan was cancelled, it does nothing 
+
+        },
+          function(error){
+            //Barcode did not work
+            alert("It did not work!");
         });
       }
   });
