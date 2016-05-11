@@ -31,14 +31,14 @@ App.controller("ScannerController", function($scope, $cordovaBarcodeScanner, $io
     format: "Example Format",
     dateTaken: new Date(),
     image: {
-      source: 'http://placehold.it/150x150'
+      source: 'http://placehold.it/300x300'
     }
   }, {
     text: "Example Text",
     format: "Example Format",
     dateTaken: new Date(),
     image: {
-      source: 'http://placehold.it/150x150'
+      source: 'http://placehold.it/300x300'
     }
   }];
 
@@ -60,7 +60,7 @@ App.controller("ScannerController", function($scope, $cordovaBarcodeScanner, $io
                 format: barcodeData.format,
                 dateTaken: new Date(),
                 image: {
-                  source: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data='+barcodeData.text
+                  source: 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data='+barcodeData.text
                 }
               });
             }
