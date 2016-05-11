@@ -27,9 +27,19 @@ var App = angular.module('starter', ['ionic', 'ngCordova'])
 App.controller("ScannerController", function($scope, $cordovaBarcodeScanner, $ionicPlatform){
 
   $scope.scans = [{
-    text: "test",
-    format: "test",
-    dateTaken: new Date()
+    text: "Example Text",
+    format: "Example Format",
+    dateTaken: new Date(),
+    image: {
+      source: 'http://placehold.it/150x150'
+    }
+  }, {
+    text: "Example Text",
+    format: "Example Format",
+    dateTaken: new Date(),
+    image: {
+      source: 'http://placehold.it/150x150'
+    }
   }];
 
   $ionicPlatform.ready(function(){
@@ -44,15 +54,17 @@ App.controller("ScannerController", function($scope, $cordovaBarcodeScanner, $io
             //Barcode scan worked
 
             //scan not cancelled
-            if(barcodeData.cancelled){
+            if(!barcodeData.cancelled){
               $scope.scans.push({
                 text: barcodeData.text,
                 format: barcodeData.format,
-                dateTaken: new Date()
+                dateTaken: new Date(),
+                image: {
+                  source: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data='+barcodeData.text
+                }
               });
             }
-
-            //if scan was cancelled, it does nothing 
+            //if scan was cancelled, it does nothing
 
         },
           function(error){

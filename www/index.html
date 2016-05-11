@@ -35,10 +35,11 @@
         <button class="button button-block button-assertive" ng-click="scanBarcode()">Scan Code</button>
 
         <ion-list type="card">
-          <ion-item ng-repeat="scan in scans">
-            {{ scan.format }}<br>
-            {{ scan.text }}<br>
-            {{ scan.dateTaken | date: 'h:mm a - dd MMM, yyyy'  }}
+          <ion-item ng-repeat="scan in scans | orderBy: '-dateTaken'" class="item-image">
+              <img src="{{scan.image.source}}" />
+              <h1>Text: {{ scan.text }}</h1>
+              <h3>Format: {{ scan.format }}</h3>
+              <h3>Date: {{ scan.dateTaken | date: 'h:mm a - dd MMM, yyyy'  }}</h3>
           </ion-item>
         </ion-list>
       </ion-content>
