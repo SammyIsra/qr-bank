@@ -34,11 +34,11 @@ App.controller("ScannerController", function($scope, $cordovaBarcodeScanner, $io
       source: 'http://placehold.it/300x300'
     }
   }, {
-    text: "Example Text",
+    text: "Example Text w/ code",
     format: "Example Format",
     dateTaken: new Date(),
     image: {
-      source: 'http://placehold.it/300x300'
+      source: 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=Example%20Text'
     }
   }];
 
@@ -53,8 +53,8 @@ App.controller("ScannerController", function($scope, $cordovaBarcodeScanner, $io
           function(barcodeData){
             //Barcode scan worked
 
-            //scan not cancelled
             if(!barcodeData.cancelled){
+              //scan not cancelled
               $scope.scans.push({
                 text: barcodeData.text,
                 format: barcodeData.format,
