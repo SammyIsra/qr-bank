@@ -60,7 +60,7 @@ App.controller("ScannerController", function($scope, $cordovaBarcodeScanner, $io
                 format: barcodeData.format,
                 dateTaken: new Date(),
                 image: {
-                  source: 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data='+barcodeData.text
+                  source: 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data='+encondeURI(barcodeData.text)
                 }
               });
             }
