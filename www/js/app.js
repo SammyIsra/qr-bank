@@ -31,22 +31,7 @@ var App = angular.module('starter', ['ionic','ionic.service.core', 'ngCordova', 
 
 App.controller("ScannerController", function($scope, $cordovaBarcodeScanner, $ionicPlatform, $cordovaSQLite){
 
-  $scope.scans = [{
-    text: "Example Text",
-    format: "Example Format",
-    dateTaken: new Date(),
-    image: {
-      source: 'http://placehold.it/300x300'
-    }
-  }, {
-    text: "Example Text w/ code",
-    format: "Example Format",
-    dateTaken: new Date(),
-    image: {
-      source: 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=Example%20Text'
-    }
-  }];
-
+  $scope.scans = [];
   
   //All ngCordova plugins need to be inside of this
   $ionicPlatform.ready(function(){
@@ -61,6 +46,23 @@ App.controller("ScannerController", function($scope, $cordovaBarcodeScanner, $io
       function(result){
         console.log("SUCCESS querying Scans_table");
         console.log(result);
+
+        //Empty scans array
+        $scope.scans = [];
+
+        //Add all items ro scans array
+        for(var x=0 ; x < result.rows.length ; x++){
+          var queryRes = result.rows.item(x);
+          $scope.scans.push({
+            text: queryRes.text,
+            format: queryRes.format,
+            dateTaken: queryRes.dateTaken,
+            image: {
+              source: queryRes.imgSource
+            }
+          });
+        }
+
       },
       function(error){
         console.log("ERROR querying Scans_table: ");
@@ -91,7 +93,7 @@ App.controller("ScannerController", function($scope, $cordovaBarcodeScanner, $io
         
       },
       function(error){
-        console.log("Error creating table");
+        console.log("ERROR creating Scans_table");
         console.log(error)  
       }
     );
@@ -125,7 +127,8 @@ App.controller("ScannerController", function($scope, $cordovaBarcodeScanner, $io
         },
           function(error){
             //Barcode did not work
-            alert("It did not work!");
+            console.log("ERROR Barcode scan did not work");
+            console.log(error);
         });
       }
   });
