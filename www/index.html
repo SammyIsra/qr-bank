@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+    <meta http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'">
     <title></title>
 
     <link href="lib/ionic/css/ionic.css" rel="stylesheet">
@@ -14,12 +15,14 @@
 
     <!-- ionic/angularjs js -->
     <script src="lib/ionic/js/ionic.bundle.js"></script>
+<script src="lib/ionic-platform-web-client/dist/ionic.io.bundle.min.js"></script>
 
     <!-- ngCordova file -->
     <script src="lib/ngCordova/dist/ng-cordova.min.js"></script>
 
     <!-- cordova script (this will be a 404 during development) -->
-    <script src="cordova.js"></script>
+    <!-- Cordova is bootstrapped by ionic-platform-web-client, uncomment this if you remove ionic-platform-web-client... -->
+<!-- <script src="cordova.js"></script> -->
 
     <!-- your app's js -->
     <script src="js/app.js"></script>
@@ -36,7 +39,7 @@
 
         <div class="card padding" ng-repeat="scan in scans | orderBy: '-dateTaken'">
           <div class="item item-image">
-            <img src="{{scan.image.source}}" style="max-width: 85%"/>
+            <img src="{{scan.image.source}}" style="max-width: 85%">
             <h1>Text: {{ scan.text }}</h1>
             <h3>Format: {{ scan.format }}</h3>
             <h3>Date: {{ scan.dateTaken | date: 'h:mm a - dd MMM, yyyy'  }}</h3>
@@ -54,7 +57,7 @@
       -->
       </ion-content>
 
-      <scans-entries></scan-entries>
-    </ion-pane>
+      <scans-entries>
+    </scans-entries></ion-pane>
   </body>
 </html>

@@ -3,10 +3,15 @@
 // angular.module is a global place for creating, registering and retrieving Angular modules
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
-var App = angular.module('starter', ['ionic', 'ngCordova'])
+var App = angular.module('starter', ['ionic','ionic.service.core', 'ngCordova', 'ionic.service.analytics'])
 
-.run(function($ionicPlatform) {
+.run(function($ionicPlatform, $ionicAnalytics) {
+
   $ionicPlatform.ready(function() {
+
+    //Register the app with Ionic analytics
+    $ionicAnalytics.register();
+
     if(window.cordova && window.cordova.plugins.Keyboard) {
       // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
       // for form inputs)
@@ -24,7 +29,7 @@ var App = angular.module('starter', ['ionic', 'ngCordova'])
 })
 
 
-App.controller("ScannerController", function($scope, $cordovaBarcodeScanner, $ionicPlatform){
+App.controller("ScannerController", function($scope, $cordovaBarcodeScanner, $ionicPlatform, $cordovaSQLite){
 
   $scope.scans = [{
     text: "Example Text",
@@ -42,27 +47,78 @@ App.controller("ScannerController", function($scope, $cordovaBarcodeScanner, $io
     }
   }];
 
+  
+  //All ngCordova plugins need to be inside of this
   $ionicPlatform.ready(function(){
+
+    //Open connection to DB
+    var db = $cordovaSQLite.openDB({ name:"scans.db", location: 'default'});
+
+    //Update list of scans with all that is inside of Scans_table
+    db.executeSql(
+      "SELECT * FROM Scans_table",
+      [],
+      function(result){
+        console.log("SUCCESS querying Scans_table");
+        console.log(result);
+      },
+      function(error){
+        console.log("ERROR querying Scans_table: ");
+        console.log(error);
+      }
+    );
+
+    $scope.insertScan = function(scanObj) {
+      db.executeSql(
+        "INSERT INTO Scans_table (text, format, dateTaken, imgSource) VALUES (?,?,?,?)",
+        [scanObj.text, scanObj.format, new Date(), scanObj.image.source],
+        function(result){
+          console.log("all good");
+          console.log(result);
+        },
+        function(error){
+          console.log("error inserting values");
+          console.log(error)
+        }
+      );
+    }
+
+    //Do initial DB connection and insert a thing
+    //The 3 functions are: db transactions, error callback, success callback
+    db.executeSql(
+      "CREATE TABLE IF NOT EXISTS Scans_table (text, format, dateTaken, imgSource)", [],
+      function(result){
+        
+      },
+      function(error){
+        console.log("Error creating table");
+        console.log(error)  
+      }
+    );
+
 
     $scope.scanBarcode = function(){
 
       //Launch the Scanner
       $cordovaBarcodeScanner
-        .scan().
-        then(
+        .scan()
+        .then(
           function(barcodeData){
             //Barcode scan worked
 
             if(!barcodeData.cancelled){
-              //scan not cancelled
-              $scope.scans.push({
+
+              var newScan = {
                 text: barcodeData.text,
                 format: barcodeData.format,
                 dateTaken: new Date(),
                 image: {
-                  source: 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data='+encondeURI(barcodeData.text)
+                  source: 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data='+encodeURI(barcodeData.text)
                 }
-              });
+              }
+              //scan not cancelled
+              $scope.scans.push(newScan);
+              $scope.insertScan(newScan);
             }
             //if scan was cancelled, it does nothing
 
