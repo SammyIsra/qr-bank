@@ -44,13 +44,15 @@ App.controller("ScannerController", function($scope, $cordovaBarcodeScanner, $io
       "SELECT * FROM Scans_table",
       [],
       function(result){
+      //DB Query was successful
+
         console.log("SUCCESS querying Scans_table");
         console.log(result);
 
         //Empty scans array
         $scope.scans = [];
 
-        //Add all items ro scans array
+        //Add all query results to scans array
         for(var x=0 ; x < result.rows.length ; x++){
           var queryRes = result.rows.item(x);
           $scope.scans.push({
@@ -65,11 +67,13 @@ App.controller("ScannerController", function($scope, $cordovaBarcodeScanner, $io
 
       },
       function(error){
+      //DB Query failed
         console.log("ERROR querying Scans_table: ");
         console.log(error);
       }
     );
 
+    //Insert a scan to the DB, after being scanned
     $scope.insertScan = function(scanObj) {
       db.executeSql(
         "INSERT INTO Scans_table (text, format, dateTaken, imgSource) VALUES (?,?,?,?)",
@@ -97,8 +101,9 @@ App.controller("ScannerController", function($scope, $cordovaBarcodeScanner, $io
         console.log(error)  
       }
     );
+    
 
-
+    //Scan barcode
     $scope.scanBarcode = function(){
 
       //Launch the Scanner
@@ -107,6 +112,9 @@ App.controller("ScannerController", function($scope, $cordovaBarcodeScanner, $io
         .then(
           function(barcodeData){
             //Barcode scan worked
+
+            console.log("SUCESS scanning barcode");
+            console.log(barcodeData);
 
             if(!barcodeData.cancelled){
 
