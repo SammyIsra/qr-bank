@@ -28,20 +28,31 @@ var App = angular.module('starter', ['ionic','ionic.service.core', 'ngCordova', 
   });
 })
 
+.config(function($ionicConfigProvider){
+
+  $ionicConfigProvider.tabs.position('bottom');
+  
+})
+
 .config(function($stateProvider, $urlRouterProvider){
 
   $stateProvider
-    .state('list', {
+    .state('tabs', {
+      url: '/tab',
+      abstract: true,
+      templateUrl: 'templates/tabs.html'
+    })
+    .state('tabs.list', {
       url: '/list',
       views: {
-        'list': {
+        'list-tab': {
           templateUrl: '/templates/list.html',
           controller: 'ScannerController'
         }
       }
     })
   
-  $urlRouterProvider.otherwise('/list');
+  $urlRouterProvider.otherwise('/tab/list');
 
 })
 
