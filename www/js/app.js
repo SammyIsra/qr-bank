@@ -28,8 +28,24 @@ var App = angular.module('starter', ['ionic','ionic.service.core', 'ngCordova', 
   });
 })
 
+.config(function($stateProvider, $urlRouterProvider){
 
-App.controller("ScannerController", function($scope, $cordovaBarcodeScanner, $ionicPlatform, $cordovaSQLite){
+  $stateProvider
+    .state('list', {
+      url: '/list',
+      views: {
+        'list': {
+          templateUrl: '/templates/list.html',
+          controller: 'ScannerController'
+        }
+      }
+    })
+  
+  $urlRouterProvider.otherwise('/list');
+
+})
+
+.controller("ScannerController", function($scope, $cordovaBarcodeScanner, $ionicPlatform, $cordovaSQLite){
 
   $scope.scans = [];
   

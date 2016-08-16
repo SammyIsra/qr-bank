@@ -1,0 +1,32 @@
+<ion-pane>
+    <ion-header-bar class="bar-stable">
+    <h1 class="title">QR Bank</h1>
+    </ion-header-bar>
+
+    <ion-content ng-controller="ScannerController">
+    <button class="button button-block button-assertive" ng-click="scanBarcode()">Scan Code</button>
+
+    <div class="card padding" ng-repeat="scan in scans | orderBy: '-dateTaken'">
+        <div class="item item-image">
+        <img src="{{ scan.image.source }}" style="max-width: 85%">
+        <h1>Text: {{ scan.text }}</h1>
+        <h3>Format: {{ scan.format }}</h3>
+        <h3>Date: {{ scan.dateTaken | date: 'h:mm a - dd MMM, yyyy' }}</h3>
+        </div>
+    </div>
+    <!--
+    <ion-list type="card">
+        <ion-item ng-repeat="scan in scans | orderBy: '-dateTaken'" class="item-image">
+            <img src="{{scan.image.source}}" />
+            <h1>Text: {{ scan.text }}</h1>
+            <h3>Format: {{ scan.format }}</h3>
+            <h3>Date: {{ scan.dateTaken | date: 'h:mm a - dd MMM, yyyy'  }}</h3>
+        </ion-item>
+    </ion-list>
+    -->
+    </ion-content>
+
+    <scans-entries>
+    </scans-entries>
+
+</ion-pane>
