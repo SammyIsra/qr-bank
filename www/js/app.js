@@ -3,7 +3,7 @@
 // angular.module is a global place for creating, registering and retrieving Angular modules
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
-var App = angular.module('starter', ['ionic','ionic.service.core', 'ngCordova', 'ionic.service.analytics'])
+var App = angular.module('starter', ['ionic','ionic.service.core', 'ionic.service.analytics', 'ngCordova'])
 
 .run(function($ionicPlatform, $ionicAnalytics) {
 
@@ -37,22 +37,25 @@ var App = angular.module('starter', ['ionic','ionic.service.core', 'ngCordova', 
 .config(function($stateProvider, $urlRouterProvider){
 
   $stateProvider
-    .state('tabs', {
-      url: '/tab',
+
+    .state('app', {
+      url: '/app',
       abstract: true,
-      templateUrl: 'templates/tabs.html'
+      templateUrl: 'templates/menu.html'
     })
-    .state('tabs.list', {
+
+    .state('app.list', {
       url: '/list',
       views: {
-        'list-tab': {
-          templateUrl: '/templates/list.html',
+        'menuContent': {
+          templateUrl: 'templates/list.html',
           controller: 'ScannerController'
         }
       }
-    })
+    }
+  );
   
-  $urlRouterProvider.otherwise('/tab/list');
+  $urlRouterProvider.otherwise('/app/list');
 
 })
 
