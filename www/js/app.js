@@ -62,12 +62,14 @@ var App = angular.module('starter', ['ionic','ionic.service.core', 'ionic.servic
 
 })
 
-.controller("ListController", function($scope, $ionicPlatform, $cordovaSQLite){
+.controller('ListController', function($scope, $ionicPlatform, $cordovaSQLite){
 
   $scope.scans = [];
 
   $ionicPlatform.ready(function(){
-    
+
+    var db = $cordovaSQLite.openDB({ name:'cans.db', location: 'default'});
+
   });
 })
 
