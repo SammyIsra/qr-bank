@@ -62,6 +62,15 @@ var App = angular.module('starter', ['ionic','ionic.service.core', 'ionic.servic
 
 })
 
+.controller("ListController", function($scope, $ionicPlatform, $cordovaSQLite){
+
+  $scope.scans = [];
+
+  $ionicPlatform.ready(function(){
+    
+  });
+})
+
 .controller("ScannerController", function($scope, $cordovaBarcodeScanner, $ionicPlatform, $cordovaSQLite){
 
   $scope.scans = [];
