@@ -4,12 +4,15 @@
         <ion-list>
             <ion-item class="item-input item-stacked-labels">
                 <span class="input-label">Name</span>
-                <ion-input placeholder="Coffee store"></ion-input>
+                <input type="text" placeholder="Coffee store"></input>
             </ion-item>
             <ion-item class="item-input item-stacked-labels">
                 <span class="input-label">Comments</span>
                 <textarea placeholder="10 for a free grande coffee"></textarea>
             </ion-item>
+
+             <button class="button button-block button-assertive" ng-click="scanBarcode()">Scan Code</button>
+             
         </ion-list>
     </ion-content>
 </ion-view>

@@ -28,12 +28,6 @@ var App = angular.module('starter', ['ionic','ionic.service.core', 'ionic.servic
   });
 })
 
-.config(function($ionicConfigProvider){
-
-  $ionicConfigProvider.tabs.position('bottom');
-  
-})
-
 .config(function($stateProvider, $urlRouterProvider){
 
   $stateProvider
@@ -53,12 +47,14 @@ var App = angular.module('starter', ['ionic','ionic.service.core', 'ionic.servic
         }
       }
     })
-    
-    .state('app.newScan', {
+
+    .state('app.newscan', {
       url: '/newScan',
       views: {
-        templateUrl: 'templates/newScan.html',
-        //controller: 'ScannerController'
+        'menuContent': {
+          templateUrl: 'templates/newScan.html',
+          //controller: 'ScannerController'
+        }
       }
     });
   
