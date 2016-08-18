@@ -1,6 +1,6 @@
-<ion-view>
+<ion-view view-title="List">
+    <ion-content class="has-header">
 
-    <ion-content class="has-header" ng-controller="ScannerController">
     <button class="button button-block button-assertive" ng-click="scanBarcode()">Scan Code</button>
 
     <div class="card padding" ng-repeat="scan in scans | orderBy: '-dateTaken'">

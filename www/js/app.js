@@ -52,8 +52,15 @@ var App = angular.module('starter', ['ionic','ionic.service.core', 'ionic.servic
           controller: 'ScannerController'
         }
       }
-    }
-  );
+    })
+    
+    .state('app.newScan', {
+      url: '/newScan',
+      views: {
+        templateUrl: 'templates/newScan.html',
+        //controller: 'ScannerController'
+      }
+    });
   
   $urlRouterProvider.otherwise('/app/list');
 
