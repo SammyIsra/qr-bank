@@ -43,7 +43,7 @@ var App = angular.module('starter', ['ionic','ionic.service.core', 'ionic.servic
       views: {
         'menuContent': {
           templateUrl: 'templates/list.html',
-          controller: 'ScannerController'
+          controller: 'ListController'
         }
       }
     })
@@ -53,7 +53,7 @@ var App = angular.module('starter', ['ionic','ionic.service.core', 'ionic.servic
       views: {
         'menuContent': {
           templateUrl: 'templates/newScan.html',
-          //controller: 'ScannerController'
+          controller: 'ScannerController'
         }
       }
     });
@@ -68,14 +68,63 @@ var App = angular.module('starter', ['ionic','ionic.service.core', 'ionic.servic
 
   $ionicPlatform.ready(function(){
 
-    var db = $cordovaSQLite.openDB({ name:'cans.db', location: 'default'});
+    var db = $cordovaSQLite.openDB({ name:'scans.db', location: 'default'});
 
+    //Do initial DB connection and insert a thing
+    //The 3 functions are: db transactions, error callback, success callback
+    db.executeSql(
+      "CREATE TABLE IF NOT EXISTS Scans_table (id PRIMARY KEY, name, comment, text, format, dateTaken, imgSource)", [],
+      function(result){
+        console.log("SUCCESS creating Scans_table");
+        console.log(result);
+      },
+      function(error){
+        console.log("ERROR creating Scans_table");
+        console.log(error);  
+      }
+    );
+
+    //This runs every time the page is in view, to refresh the scans
+    $scope.$on('$ionicView.enter', function(e) {
+      
+      db.executeSql(
+        "SELECT * FROM Scans_table",
+        [],
+        function(result){
+        //On successfull call
+          console.log("SUCCESS querying Scans_table");
+          console.log(result);
+
+          //Empty the scans array
+          $scope.scans = [];
+
+          //Add all query results to scans array
+          for(var x=0 ; x < result.rows.length ; x++){
+            var queryRes = result.rows.item(x);
+            $scope.scans.push({
+              id: queryRes.id,
+              name: queryRes.name,
+              comment: queryRes.comment,
+              text: queryRes.text,
+              format: queryRes.format,
+              dateTaken: queryRes.dateTaken,
+              image: {
+                source: queryRes.imgSource
+              }
+            });
+          }
+        },
+        function(error){
+        //On failed call
+          console.log("ERROR querying Scans_table: ");
+          console.log(error);
+        }
+      );
+    });
   });
 })
 
 .controller("ScannerController", function($scope, $cordovaBarcodeScanner, $ionicPlatform, $cordovaSQLite){
-
-  $scope.scans = [];
   
   //All ngCordova plugins need to be inside of this
   $ionicPlatform.ready(function(){
@@ -83,51 +132,18 @@ var App = angular.module('starter', ['ionic','ionic.service.core', 'ionic.servic
     //Open connection to DB
     var db = $cordovaSQLite.openDB({ name:"scans.db", location: 'default'});
 
-    //Update list of scans with all that is inside of Scans_table
-    db.executeSql(
-      "SELECT * FROM Scans_table",
-      [],
-      function(result){
-      //DB Query was successful
-
-        console.log("SUCCESS querying Scans_table");
-        console.log(result);
-
-        //Empty scans array
-        $scope.scans = [];
-
-        //Add all query results to scans array
-        for(var x=0 ; x < result.rows.length ; x++){
-          var queryRes = result.rows.item(x);
-          $scope.scans.push({
-            text: queryRes.text,
-            format: queryRes.format,
-            dateTaken: queryRes.dateTaken,
-            image: {
-              source: queryRes.imgSource
-            }
-          });
-        }
-
-      },
-      function(error){
-      //DB Query failed
-        console.log("ERROR querying Scans_table: ");
-        console.log(error);
-      }
-    );
-
     //Insert a scan to the DB, after being scanned
-    $scope.insertScan = function(scanObj) {
+    function insertScan(scanObj) {
+      console.log(scanObj);
       db.executeSql(
-        "INSERT INTO Scans_table (text, format, dateTaken, imgSource) VALUES (?,?,?,?)",
-        [scanObj.text, scanObj.format, new Date(), scanObj.image.source],
+        "INSERT INTO Scans_table (name, comment, text, format, dateTaken, imgSource) VALUES (?,?,?,?,?,?)",
+        [scanObj.name, scanObj.comment, scanObj.text, scanObj.format, scanObj.dateTaken, scanObj.image.source],
         function(result){
-          console.log("all good");
+          console.log("SUCCESS inserting scan to DB");
           console.log(result);
         },
         function(error){
-          console.log("error inserting values");
+          console.log("ERROR inserting scan to DB");
           console.log(error)
         }
       );
@@ -136,19 +152,31 @@ var App = angular.module('starter', ['ionic','ionic.service.core', 'ionic.servic
     //Do initial DB connection and insert a thing
     //The 3 functions are: db transactions, error callback, success callback
     db.executeSql(
-      "CREATE TABLE IF NOT EXISTS Scans_table (text, format, dateTaken, imgSource)", [],
+      "CREATE TABLE IF NOT EXISTS Scans_table (id PRIMARY KEY, name, comment, text, format, dateTaken, imgSource)", [],
       function(result){
-        
+        console.log("SUCCESS creating Scans_table");
+        console.log(result);
       },
       function(error){
         console.log("ERROR creating Scans_table");
-        console.log(error)  
+        console.log(error);  
       }
     );
+
+    $scope.saveCode = function(){
+      insertScan(Object.assign($scope.newScanNotes, $scope.newScan));
+    };
+
+    $scope.newScanNotes = {
+      name: "",
+      comment: ""
+    }
     
 
-    //Scan barcode
+    //Scan barcode, called when a button is pressed on the View
     $scope.scanBarcode = function(){
+
+      
 
       //Launch the Scanner
       $cordovaBarcodeScanner
@@ -162,7 +190,7 @@ var App = angular.module('starter', ['ionic','ionic.service.core', 'ionic.servic
 
             if(!barcodeData.cancelled){
 
-              var newScan = {
+              $scope.newScan = {
                 text: barcodeData.text,
                 format: barcodeData.format,
                 dateTaken: new Date(),
@@ -170,9 +198,6 @@ var App = angular.module('starter', ['ionic','ionic.service.core', 'ionic.servic
                   source: 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data='+encodeURI(barcodeData.text)
                 }
               }
-              //scan not cancelled
-              $scope.scans.push(newScan);
-              $scope.insertScan(newScan);
             }
             //if scan was cancelled, it does nothing
 

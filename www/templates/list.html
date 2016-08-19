@@ -1,15 +1,16 @@
 <ion-view view-title="List">
     <ion-content class="has-header">
 
-    <button class="button button-block button-assertive" ng-click="scanBarcode()">Scan Code</button>
-
     <div class="card padding" ng-repeat="scan in scans | orderBy: '-dateTaken'">
+        <h1>Name: {{ scan.name }}</h1>
+        <p>Comment: {{ scan.comment }}</p>
         <div class="item item-image">
-        <img src="{{ scan.image.source }}" style="max-width: 85%">
-        <h1>Text: {{ scan.text }}</h1>
-        <h3>Format: {{ scan.format }}</h3>
-        <h3>Date: {{ scan.dateTaken | date: 'h:mm a - dd MMM, yyyy' }}</h3>
+            <img src="{{ scan.image.source }}" style="max-width: 85%">
+            <h3>Text: {{ scan.text }}</h1>
+            <h3>Format: {{ scan.format }}</h3>
+            <h3>Date: {{ scan.dateTaken | date: 'h:mm a - dd MMM, yyyy' }}</h3>
         </div>
+        <p>id: {{scan.id}}</p>
     </div>
     <!--
     <ion-list type="card">
