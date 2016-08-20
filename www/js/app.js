@@ -56,6 +56,15 @@ var App = angular.module('starter', ['ionic','ionic.service.core', 'ionic.servic
           controller: 'ScannerController'
         }
       }
+    })
+    
+    .state('app.detail', {
+      url: '/detail',
+      views: {
+        'menuContent': {
+          templateUrl: 'templates/detail.html'
+        }
+      }
     });
   
   $urlRouterProvider.otherwise('/app/list');
@@ -72,17 +81,7 @@ var App = angular.module('starter', ['ionic','ionic.service.core', 'ionic.servic
 
     //Do initial DB connection and insert a thing
     //The 3 functions are: db transactions, error callback, success callback
-    db.executeSql(
-      "CREATE TABLE IF NOT EXISTS Scans_table (id PRIMARY KEY, name, comment, text, format, dateTaken, imgSource)", [],
-      function(result){
-        console.log("SUCCESS creating Scans_table");
-        console.log(result);
-      },
-      function(error){
-        console.log("ERROR creating Scans_table");
-        console.log(error);  
-      }
-    );
+    createScansTable(db);
 
     //This runs every time the page is in view, to refresh the scans
     $scope.$on('$ionicView.enter', function(e) {
@@ -101,6 +100,8 @@ var App = angular.module('starter', ['ionic','ionic.service.core', 'ionic.servic
           //Add all query results to scans array
           for(var x=0 ; x < result.rows.length ; x++){
             var queryRes = result.rows.item(x);
+            console.log("QUERYRES is");
+            console.log(queryRes);
             $scope.scans.push({
               id: queryRes.id,
               name: queryRes.name,
@@ -151,17 +152,7 @@ var App = angular.module('starter', ['ionic','ionic.service.core', 'ionic.servic
 
     //Do initial DB connection and insert a thing
     //The 3 functions are: db transactions, error callback, success callback
-    db.executeSql(
-      "CREATE TABLE IF NOT EXISTS Scans_table (id PRIMARY KEY, name, comment, text, format, dateTaken, imgSource)", [],
-      function(result){
-        console.log("SUCCESS creating Scans_table");
-        console.log(result);
-      },
-      function(error){
-        console.log("ERROR creating Scans_table");
-        console.log(error);  
-      }
-    );
+    createScansTable(db);
 
     $scope.saveCode = function(){
       insertScan(Object.assign($scope.newScanNotes, $scope.newScan));
@@ -171,12 +162,9 @@ var App = angular.module('starter', ['ionic','ionic.service.core', 'ionic.servic
       name: "",
       comment: ""
     }
-    
 
     //Scan barcode, called when a button is pressed on the View
     $scope.scanBarcode = function(){
-
-      
 
       //Launch the Scanner
       $cordovaBarcodeScanner
@@ -207,6 +195,31 @@ var App = angular.module('starter', ['ionic','ionic.service.core', 'ionic.servic
             console.log("ERROR Barcode scan did not work");
             console.log(error);
         });
+
+        $state.go('#/app/list')
       }
   });
 });
+
+function createScansTable(db){
+
+  db.executeSql(
+    "CREATE TABLE IF NOT EXISTS Scans_table (" +
+      "rowid      INTEGER PRIMARY KEY ," +
+      "name       TEXT                NOT NULL," +
+      "comment    TEXT, " +
+      "text       TEXT                NOT NULL, " +
+      "format     TEXT                NOT NULL, " +
+      "dateTaken  TEXT                NOT NULL, " +
+      "imgSource  TEXT                NOT NULL)", 
+      [],
+    function(result){
+      console.log("SUCCESS creating Scans_table");
+      console.log(result);
+    },
+    function(error){
+      console.log("ERROR creating Scans_table");
+      console.log(error);  
+    }
+  );
+};
