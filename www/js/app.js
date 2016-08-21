@@ -79,48 +79,17 @@ var App = angular.module('starter', ['ionic','ionic.service.core', 'ionic.servic
 
     var db = $cordovaSQLite.openDB({ name:'scans.db', location: 'default'});
 
-    //Do initial DB connection and insert a thing
-    //The 3 functions are: db transactions, error callback, success callback
+    //Do initial DB connection
     createScansTable(db);
 
-    //This runs every time the page is in view, to refresh the scans
+    //Do initial population of $scope.scans with what's on the Scans table (runs on startup)
+    updateScansList(db, $scope);
+
+    //This runs every time the page is in view, to refresh the scans (runs when view is in focus)
     $scope.$on('$ionicView.enter', function(e) {
       
-      db.executeSql(
-        "SELECT * FROM Scans_table",
-        [],
-        function(result){
-        //On successfull call
-          console.log("SUCCESS querying Scans_table");
-          console.log(result);
-
-          //Empty the scans array
-          $scope.scans = [];
-
-          //Add all query results to scans array
-          for(var x=0 ; x < result.rows.length ; x++){
-            var queryRes = result.rows.item(x);
-            console.log("QUERYRES is");
-            console.log(queryRes);
-            $scope.scans.push({
-              id: queryRes.id,
-              name: queryRes.name,
-              comment: queryRes.comment,
-              text: queryRes.text,
-              format: queryRes.format,
-              dateTaken: queryRes.dateTaken,
-              image: {
-                source: queryRes.imgSource
-              }
-            });
-          }
-        },
-        function(error){
-        //On failed call
-          console.log("ERROR querying Scans_table: ");
-          console.log(error);
-        }
-      );
+      //Update scans list in $scope
+      updateScansList(db, $scope);
     });
   });
 })
@@ -223,3 +192,42 @@ function createScansTable(db){
     }
   );
 };
+
+function updateScansList(db, scope){
+
+  db.executeSql(
+    "SELECT * FROM Scans_table",
+    [],
+    function(result){
+    //On successfull call
+      console.log("SUCCESS querying Scans_table");
+      console.log(result);
+
+      //Empty the scans array
+      scope.scans = [];
+
+      //Add all query results to scans array
+      for(var x=0 ; x < result.rows.length ; x++){
+        var queryRes = result.rows.item(x);
+        console.log("QUERYRES is");
+        console.log(queryRes);
+        scope.scans.push({
+          id: queryRes.id,
+          name: queryRes.name,
+          comment: queryRes.comment,
+          text: queryRes.text,
+          format: queryRes.format,
+          dateTaken: new Date(queryRes.dateTaken),
+          image: {
+            source: queryRes.imgSource
+          }
+        });
+      }
+    },
+    function(error){
+    //On failed call
+      console.log("ERROR querying Scans_table: ");
+      console.log(error);
+    }
+  );
+}
