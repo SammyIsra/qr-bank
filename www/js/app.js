@@ -82,12 +82,20 @@ var App = angular.module('starter', ['ionic','ionic.service.core', 'ionic.servic
     //Do initial DB connection
     createScansTable(db);
 
-    //Do initial population of $scope.scans with what's on the Scans table (runs on startup)
-    updateScansList(db, $scope);
+
+    $scope.$on("$ionicView.loaded", function(event, data){
+      // handle event
+      console.log("State Params: ", data.stateParams);
+      console.log("IONIC VIEW LOADED");
+      updateScansList(db, $scope);
+    });
+
 
     //This runs every time the page is in view, to refresh the scans (runs when view is in focus)
-    $scope.$on('$ionicView.enter', function(e) {
+    $scope.$on('$ionicView.enter', function(event, data) {
       
+      console.log("IONIC VIEW ENTERED");
+
       //Update scans list in $scope
       updateScansList(db, $scope);
     });
