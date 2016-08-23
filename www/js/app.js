@@ -82,11 +82,11 @@ var App = angular.module('starter', ['ionic','ionic.service.core', 'ionic.servic
     //Do initial DB connection
     createScansTable(db);
 
-
     $scope.$on("$ionicView.loaded", function(event, data){
-      // handle event
-      console.log("State Params: ", data.stateParams);
-      console.log("IONIC VIEW LOADED");
+      
+      //Handle event
+      notice(data.stateParams, "IONIC VIEW LOADED");
+      //Update scans list in $scope
       updateScansList(db, $scope);
     });
 
@@ -94,15 +94,21 @@ var App = angular.module('starter', ['ionic','ionic.service.core', 'ionic.servic
     //This runs every time the page is in view, to refresh the scans (runs when view is in focus)
     $scope.$on('$ionicView.enter', function(event, data) {
       
-      console.log("IONIC VIEW ENTERED");
-
+      //Handle event
+      notice(data.stateParams, "(LIST) IONIC VIEW ENTERED");
       //Update scans list in $scope
       updateScansList(db, $scope);
     });
   });
 })
 
-.controller("ScannerController", function($scope, $cordovaBarcodeScanner, $ionicPlatform, $cordovaSQLite){
+.controller("ScannerController", function($scope, $cordovaBarcodeScanner, $state, $ionicPlatform, $cordovaSQLite){
+
+  //This runs every time the page is in view, to refresh the scans (runs when view is in focus)
+  $scope.$on('$ionicView.enter', function(event, data) {
+    //Handle event
+    notice(data.stateParams, "(SCANNER) IONIC VIEW ENTERED");
+  });
   
   //All ngCordova plugins need to be inside of this
   $ionicPlatform.ready(function(){
@@ -112,17 +118,14 @@ var App = angular.module('starter', ['ionic','ionic.service.core', 'ionic.servic
 
     //Insert a scan to the DB, after being scanned
     function insertScan(scanObj) {
-      console.log(scanObj);
       db.executeSql(
         "INSERT INTO Scans_table (name, comment, text, format, dateTaken, imgSource) VALUES (?,?,?,?,?,?)",
         [scanObj.name, scanObj.comment, scanObj.text, scanObj.format, scanObj.dateTaken, scanObj.image.source],
         function(result){
-          console.log("SUCCESS inserting scan to DB");
-          console.log(result);
+          notice(result, "SUCCESS inserting scan to DB");
         },
         function(error){
-          console.log("ERROR inserting scan to DB");
-          console.log(error)
+          notice(error, "ERROR inserting scan to DB");
         }
       );
     }
@@ -133,6 +136,7 @@ var App = angular.module('starter', ['ionic','ionic.service.core', 'ionic.servic
 
     $scope.saveCode = function(){
       insertScan(Object.assign($scope.newScanNotes, $scope.newScan));
+      $state.go('app.list');
     };
 
     $scope.newScanNotes = {
@@ -150,8 +154,7 @@ var App = angular.module('starter', ['ionic','ionic.service.core', 'ionic.servic
           function(barcodeData){
             //Barcode scan worked
 
-            console.log("SUCESS scanning barcode");
-            console.log(barcodeData);
+            notice(barcodeData, "SUCCESS scanning barcode");
 
             if(!barcodeData.cancelled){
 
@@ -163,17 +166,14 @@ var App = angular.module('starter', ['ionic','ionic.service.core', 'ionic.servic
                   source: 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data='+encodeURI(barcodeData.text)
                 }
               }
+            } else {
+              notice(barcodeData, "CANCELLED scan");
             }
-            //if scan was cancelled, it does nothing
-
         },
           function(error){
             //Barcode did not work
-            console.log("ERROR Barcode scan did not work");
-            console.log(error);
+            notice(error, "ERROR Barcode scan did not work");
         });
-
-        $state.go('#/app/list')
       }
   });
 });
@@ -191,12 +191,10 @@ function createScansTable(db){
       "imgSource  TEXT                NOT NULL)", 
       [],
     function(result){
-      console.log("SUCCESS creating Scans_table");
-      console.log(result);
+      notice(result, "SUCCESS creating Scans_table");
     },
     function(error){
-      console.log("ERROR creating Scans_table");
-      console.log(error);  
+      notice(error, "ERROR creating Scans_table");
     }
   );
 };
@@ -208,8 +206,7 @@ function updateScansList(db, scope){
     [],
     function(result){
     //On successfull call
-      console.log("SUCCESS querying Scans_table");
-      console.log(result);
+      notice(ready, "SUCCESS querying Scans_table");
 
       //Empty the scans array
       scope.scans = [];
@@ -217,8 +214,7 @@ function updateScansList(db, scope){
       //Add all query results to scans array
       for(var x=0 ; x < result.rows.length ; x++){
         var queryRes = result.rows.item(x);
-        console.log("QUERYRES is");
-        console.log(queryRes);
+        notice(queryRes,"QUERY RESULT is");
         scope.scans.push({
           id: queryRes.id,
           name: queryRes.name,
@@ -234,8 +230,12 @@ function updateScansList(db, scope){
     },
     function(error){
     //On failed call
-      console.log("ERROR querying Scans_table: ");
-      console.log(error);
+      notice(error, "ERROR querying Scans_table: ");
     }
   );
+}
+
+function notice (Obj, note){
+  console.log(note);
+  console.log(Obj);
 }
