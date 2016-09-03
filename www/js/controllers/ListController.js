@@ -1,5 +1,5 @@
 /* Controller for the list of scans */
-angular.module('starter', ['ionic','ionic.service.core', 'ionic.service.analytics', 'ngCordova'])
+angular.module('starter')
 .controller('ListController', ['$scope', '$ionicPlatform', '$cordovaSQLite', '$state', 
 function($scope, $ionicPlatform, $cordovaSQLite, $state){
 
@@ -15,7 +15,7 @@ function($scope, $ionicPlatform, $cordovaSQLite, $state){
     $scope.$on("$ionicView.loaded", function(event, data){
       
       //Handle event
-      notice(data.stateParams, "IONIC VIEW LOADED");
+      $rootScope.util.notice(data.stateParams, "IONIC VIEW LOADED");
       //Update scans list in $scope
       updateScansList(db, $scope);
     });
@@ -25,7 +25,7 @@ function($scope, $ionicPlatform, $cordovaSQLite, $state){
     $scope.$on('$ionicView.enter', function(event, data) {
       
       //Handle event
-      notice(data.stateParams, "(LIST) IONIC VIEW ENTERED");
+      $rootScope.util.notice(data.stateParams, "(LIST) IONIC VIEW ENTERED");
       //Update scans list in $scope
       updateScansList(db, $scope);
     });

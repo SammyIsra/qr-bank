@@ -5,7 +5,7 @@
 // the 2nd parameter is an array of 'requires'
 angular.module('starter', ['ionic','ionic.service.core', 'ionic.service.analytics', 'ngCordova'])
 
-.run(function($ionicPlatform, $ionicAnalytics) {
+.run(function($ionicPlatform, $ionicAnalytics, $cordovaSQLite) {
 
   $ionicPlatform.ready(function() {
 
@@ -25,6 +25,100 @@ angular.module('starter', ['ionic','ionic.service.core', 'ionic.service.analytic
     if(window.StatusBar) {
       StatusBar.styleDefault();
     }
+
+    /*************************************
+     *      SETUP FOR THE SCANS TABLE    *
+     *************************************/
+
+    $rootScope.TableInterface = {};
+
+    //DB object
+    $rootScope.TableInterface.db = $cordovaSQLite.openDB({ name:'scans.db', location: 'default'});
+
+    //Create the scans table (runs once, hopefully) 
+    $rootScope.TableInterface.createScansTable = function(){
+
+      $rootScope.db.executeSql(
+        "CREATE TABLE IF NOT EXISTS Scans_table (" +
+          "rowid      INTEGER PRIMARY KEY ," +
+          "name       TEXT                NOT NULL," +
+          "comment    TEXT, " +
+          "text       TEXT                NOT NULL, " +
+          "format     TEXT                NOT NULL, " +
+          "dateTaken  TEXT                NOT NULL, " +
+          "imgSource  TEXT                NOT NULL)", 
+          [],
+        function(result){
+          $rootScope.util.notice(result, "SUCCESS creating Scans_table");
+        },
+        function(error){
+          $rootScope.util.notice(error, "ERROR creating Scans_table");
+        }
+      );
+    }
+
+    //Insert a scan to the DB, runs after a new scan
+    $rootScope.TableInterface.insertScan = function(ScanObj){
+
+      $rootScope.TableInterface.db.executeSql(
+      "INSERT INTO Scans_table " +
+      "(name, comment, text, format, dateTaken, imgSource) " + 
+      "VALUES (?,?,?,?,?,?)",
+      [scanObj.name, scanObj.comment, scanObj.text, scanObj.format, scanObj.dateTaken, scanObj.image.source],
+      function(result){
+          $rootScope.util.notice(result, "SUCCESS inserting scan to DB");
+      },
+      function(error){
+          $rootScope.util.notice(error, "ERROR inserting scan to DB");
+      });
+    }
+
+
+    //Update scans list. Only used on the ListController
+    $rootScope.TableInterface.updateScanList = function (scope){
+
+      $rootScope.TableInterface.db.executeSql(
+        "SELECT * FROM Scans_table",
+        [],
+        function(result){
+        //On successfull call
+          notice(ready, "SUCCESS querying Scans_table");
+
+          //Empty the scans array
+          scope.scans = [];
+
+          //Add all query results to scans array
+          for(var x=0 ; x < result.rows.length ; x++){
+            var queryRes = result.rows.item(x);
+            notice(queryRes,"QUERY RESULT is");
+            scope.scans.push({
+              id: queryRes.id,
+              name: queryRes.name,
+              comment: queryRes.comment,
+              text: queryRes.text,
+              format: queryRes.format,
+              dateTaken: new Date(queryRes.dateTaken),
+              image: {
+                source: queryRes.imgSource
+              }
+            });
+          }
+        },
+        function(error){
+        //On failed call
+          $rootScope.util.notice(error, "ERROR querying Scans_table: ");
+        }
+      );
+
+      $rootScope.util.notice(null, "QUERY FINISHED");
+    }
+
+    //Send stuff to notification
+    $rootScope.util.notice = function (Obj, note){
+      console.log(note);
+      console.log(Obj);
+    }
+
   });
 })
 
@@ -72,30 +166,3 @@ angular.module('starter', ['ionic','ionic.service.core', 'ionic.service.analytic
   $urlRouterProvider.otherwise('/app/list');
 
 });
-
-  $scope.scans = [];
-
-  $ionicPlatform.ready(function(){
-
-    var db = $cordovaSQLite.openDB({ name:'scans.db', location: 'default'});
-
-    //Do initial DB connection
-    createScansTable(db);
-
-    $scope.$on("$ionicView.loaded", function(event, data){
-      
-      //Handle event
-      notice(data.stateParams, "IONIC VIEW LOADED");
-      //Update scans list in $scope
-      updateScansList(db, $scope);
-    });
-
-
-    //This runs every time the page is in view, to refresh the scans (runs when view is in focus)
-    $scope.$on('$ionicView.enter', function(event, data) {
-      
-      //Handle event
-      notice(data.stateParams, "(LIST) IONIC VIEW ENTERED");
-      //Update scans list in $scope
-      updateScansList(db, $scope);
-    }

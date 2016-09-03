@@ -1,9 +1,10 @@
 /* Controller for the list of scans */
-angular.module('starter', ['ionic','ionic.service.core', 'ionic.service.analytics', 'ngCordova'])
+angular.module('starter')
 .controller('DetailController', ['$scope', '$ionicPlatform', '$cordovaSQLite', '$state', '$stateParams', 
 function($scope, $ionicPlatform, $cordovaSQLite, $state, $stateParams){
 
-  $scope.scanId = $stateParams.scanId;
+  $scope.argScanId = $stateParams.scanId;
+  console.log("Got id: " + $scope.argScanId);
 
   $ionicPlatform.ready(function(){
 
@@ -15,7 +16,7 @@ function($scope, $ionicPlatform, $cordovaSQLite, $state, $stateParams){
     $scope.$on("$ionicView.loaded", function(event, data){
       
       //Handle event
-      notice(data.stateParams, "(DETAIL )IONIC VIEW LOADED");
+      $rootScope.util.notice(data.stateParams, "(DETAIL )IONIC VIEW LOADED");
     });
 
 
@@ -23,7 +24,7 @@ function($scope, $ionicPlatform, $cordovaSQLite, $state, $stateParams){
     $scope.$on('$ionicView.enter', function(event, data) {
       
       //Handle event
-      notice(data.stateParams, "(LIST) IONIC VIEW ENTERED");
+      $rootScope.util.notice(data.stateParams, "(LIST) IONIC VIEW ENTERED");
       //Update scans list in $scope
       updateScansList(db, $scope);
     });
