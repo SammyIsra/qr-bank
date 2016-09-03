@@ -5,30 +5,21 @@ function($scope, $ionicPlatform, $cordovaSQLite, $state){
 
   $scope.scans = [];
 
-  $ionicPlatform.ready(function(){
+  $scope.$on("$ionicView.loaded", function(event, data){
+    //Handle event
+    $rootScope.util.notice(data.stateParams, "IONIC VIEW LOADED");
+    //Update scans list in $scope
+    $rootScope.util.TableInterface.updateScansList($scope);
+  });
 
-    var db = $cordovaSQLite.openDB({ name:'scans.db', location: 'default'});
+  //This runs every time the page is in view, to refresh the scans (runs when view is in focus)
+  $scope.$on('$ionicView.enter', function(event, data) {
+    
+    //Tell console
+    $rootScope.util.notice(data.stateParams, "(LIST) IONIC VIEW ENTERED");
 
-    //Do initial DB connection
-    createScansTable(db);
-
-    $scope.$on("$ionicView.loaded", function(event, data){
-      
-      //Handle event
-      $rootScope.util.notice(data.stateParams, "IONIC VIEW LOADED");
-      //Update scans list in $scope
-      updateScansList(db, $scope);
-    });
-
-
-    //This runs every time the page is in view, to refresh the scans (runs when view is in focus)
-    $scope.$on('$ionicView.enter', function(event, data) {
-      
-      //Handle event
-      $rootScope.util.notice(data.stateParams, "(LIST) IONIC VIEW ENTERED");
-      //Update scans list in $scope
-      updateScansList(db, $scope);
-    });
+    //Update scans list in $scope
+    $rootScope.util.TableInterface.updateScansList($scope);
   });
 
   $scope.goToDetail = function(){
