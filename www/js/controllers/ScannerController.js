@@ -1,8 +1,8 @@
 /* CONTROLELR FOR THE SCANNER AND NEW PAGE SCANNER */
 
 angular.module('starter')
-.controller("ScannerController", ['$scope', '$cordovaBarcodeScanner', '$state', '$ionicPlatform', 
-function($scope, $cordovaBarcodeScanner, $state, $ionicPlatform){
+.controller("ScannerController", ['$scope', '$rootScope', '$cordovaBarcodeScanner', '$state', '$ionicPlatform', 
+function($scope, $rootScope, $cordovaBarcodeScanner, $state, $ionicPlatform){
 
   //This runs every time the page is in view, to refresh the scans (runs when view is in focus)
   $scope.$on('$ionicView.enter', function(event, data) {
@@ -34,9 +34,12 @@ function($scope, $cordovaBarcodeScanner, $state, $ionicPlatform){
           function(barcodeData){
             //Barcode scan worked
 
+            //Tell ppl it happened
             $rootScope.util.notice(barcodeData, "SUCCESS scanning barcode");
 
+            
             if(!barcodeData.cancelled){
+            //If it wasn't cancelled
 
               $scope.newScan = {
                 text: barcodeData.text,
@@ -47,6 +50,7 @@ function($scope, $cordovaBarcodeScanner, $state, $ionicPlatform){
                 }
               }
             } else {
+            //If it was cancelled
               $rootScope.util.notice(barcodeData, "CANCELLED scan");
             }
         },

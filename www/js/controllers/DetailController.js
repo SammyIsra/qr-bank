@@ -1,7 +1,7 @@
 /* Controller for the list of scans */
 angular.module('starter')
-.controller('DetailController', ['$scope', '$ionicPlatform', '$cordovaSQLite', '$state', '$stateParams', 
-function($scope, $ionicPlatform, $cordovaSQLite, $state, $stateParams){
+.controller('DetailController', ['$scope', '$rootScope', '$ionicPlatform', '$cordovaSQLite', '$state', '$stateParams', 
+function($scope, $rootScope, $ionicPlatform, $cordovaSQLite, $state, $stateParams){
 
   $scope.argScanId = $stateParams.scanId;
   console.log("Got id: " + $scope.argScanId);

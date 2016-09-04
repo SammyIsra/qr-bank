@@ -1,7 +1,7 @@
 /* Controller for the list of scans */
 angular.module('starter')
-.controller('ListController', ['$scope', '$ionicPlatform', '$cordovaSQLite', '$state', 
-function($scope, $ionicPlatform, $cordovaSQLite, $state){
+.controller('ListController', ['$scope', '$rootScope', '$ionicPlatform', '$cordovaSQLite', '$state', 
+function($scope, $rootScope, $ionicPlatform, $cordovaSQLite, $state){
 
   $scope.scans = [];
 
@@ -9,7 +9,7 @@ function($scope, $ionicPlatform, $cordovaSQLite, $state){
     //Handle event
     $rootScope.util.notice(data.stateParams, "IONIC VIEW LOADED");
     //Update scans list in $scope
-    $rootScope.util.TableInterface.updateScansList($scope);
+    $rootScope.TableInterface.updateScansList($scope);
   });
 
   //This runs every time the page is in view, to refresh the scans (runs when view is in focus)
@@ -19,7 +19,7 @@ function($scope, $ionicPlatform, $cordovaSQLite, $state){
     $rootScope.util.notice(data.stateParams, "(LIST) IONIC VIEW ENTERED");
 
     //Update scans list in $scope
-    $rootScope.util.TableInterface.updateScansList($scope);
+    $rootScope.TableInterface.updateScanList($scope);
   });
 
   $scope.goToDetail = function(){

@@ -5,7 +5,7 @@
 // the 2nd parameter is an array of 'requires'
 angular.module('starter', ['ionic','ionic.service.core', 'ionic.service.analytics', 'ngCordova'])
 
-.run(function($ionicPlatform, $ionicAnalytics, $cordovaSQLite) {
+.run(function($ionicPlatform, $ionicAnalytics, $cordovaSQLite, $rootScope) {
 
   $ionicPlatform.ready(function() {
 
@@ -38,7 +38,7 @@ angular.module('starter', ['ionic','ionic.service.core', 'ionic.service.analytic
     //Create the scans table (runs once, hopefully) 
     $rootScope.TableInterface.createScansTable = function(){
 
-      $rootScope.db.executeSql(
+      $rootScope.TableInterface.db.executeSql(
         "CREATE TABLE IF NOT EXISTS Scans_table (" +
           "rowid      INTEGER PRIMARY KEY ," +
           "name       TEXT                NOT NULL," +
@@ -82,7 +82,7 @@ angular.module('starter', ['ionic','ionic.service.core', 'ionic.service.analytic
         [],
         function(result){
         //On successfull call
-          notice(ready, "SUCCESS querying Scans_table");
+          $rootScope.notice(ready, "SUCCESS querying Scans_table");
 
           //Empty the scans array
           scope.scans = [];
@@ -114,10 +114,14 @@ angular.module('starter', ['ionic','ionic.service.core', 'ionic.service.analytic
     }
 
     //Send stuff to notification
+    $rootScope.util = {};
     $rootScope.util.notice = function (Obj, note){
       console.log(note);
       console.log(Obj);
     }
+
+    //Run the functions to setup the db 
+    $rootScope.TableInterface.createScansTable();
 
   });
 })
